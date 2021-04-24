@@ -1,18 +1,18 @@
 #script de la r?gression lin?aire multiple sur des donn?es state.x77
 #
 library(plotly)
-happyness2020 <- read.csv("./2020.csv")
+happyness2020 <- read.csv("./Fish.csv")
 str(happyness2020)
 
 num_cols <- unlist(lapply(happyness2020, is.numeric))
 happyness2020 <- happyness2020[ , num_cols]  
 str(happyness2020)
-happyness.lm=lm(formula=Ladder.score~.,data=happyness2020)
+happyness.lm=lm(formula=Weight~.,data=happyness2020)
 
 summary(happyness.lm)
-life.dt <- data.frame(summary(life.lm)[["coefficients"]])
-life.dt$names <- rownames(tv)
-plot_ly(life.dt, x=~names, y=~abs(t.value)  )
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])
+life.dt$names <- names(happyness2020)
+plot_ly(life.dt, x=~names, y=~t.value, type="histogram"  )
 extractAIC(life.lm)
 #
 # On soustrait ? pr?sent les variables dont le coefficient n'est pas 

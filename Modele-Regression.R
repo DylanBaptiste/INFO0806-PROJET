@@ -12,13 +12,14 @@ happyness.lm=lm(formula=quality~.,data=happyness2020)
 summary(happyness.lm)
 life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
+life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$t.value), decreasing = FALSE)])
 plot_ly(life.dt, x=~names, y=~abs(t.value), type="bar")
 extractAIC(happyness.lm)
 #
 # On soustrait ? pr?sent les variables dont le coefficient n'est pas 
 # significativement diff?rent de z?ro.
 #
-happyness.lm<- update(happyness.lm,.~.-residual.sugar)
+happyness.lm <- update(happyness.lm,.~.-citric.acid)
 summary(happyness.lm)
 extractAIC(happyness.lm)
 #

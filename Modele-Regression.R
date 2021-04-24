@@ -51,24 +51,42 @@ extractAIC(happyness.lm)
 happyness.lm <- update(happyness.lm,.~.+fixed.acidity)
 extractAIC(happyness.lm)
 summary(happyness.lm)
-#
-# On reprend le deuxi?me mod?le
-#
-life.lm<-lm(formula=Weight~Length1+Length3+Height, data=happyness2020)
-summary(life.lm)
-Res=residuals(life.lm)
+
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt$names <- rownames(life.dt)
+paste("Variables gardées :")
+life.dt$names
+
+Res=residuals(happyness.lm)
 hist(Res, freq=FALSE, nclass=10, col="yellow",main="histogramme des r?sidus")
 # 
 # On ajute la courbe en cloche ? l'histogramme pour voir si les r?sidus
 # peuvent suivre une loi normle
 #
-x=seq(-3,3,by=1)
+x=seq(-3,3,by=0.1)
 y=dnorm(x,0,1)
-lines(x,y,type="l",col="red",lwd=2.5)
+lines(x, y, type="l",col="red",lwd=2.5)
 #
 # Pr?diction
 #
-predict(life.lm,data.frame(Length1=23.2,Length3=30,Height=11.52),interval="prediction",level=0.99)
+nb <- data.frame(table(happyness2020[, "quality"]))
+plot_ly(data=nb, x=~Var1, y=~Freq, type="bar")
+
+happyness2020[2, life.dt$names]
+expectedResult <- happyness2020[2, "quality"]
+predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+
+happyness2020[252, life.dt$names]
+expectedResult <- happyness2020[252, "quality"]
+predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+
+happyness2020[775, life.dt$names]
+expectedResult <- happyness2020[775, "quality"]
+predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+
+# données biaisé car nb de donné != pour chaque type de qualité
+
+
 #
 # Etude des r?sidus
 #

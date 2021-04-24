@@ -1,13 +1,13 @@
 #script de la r?gression lin?aire multiple sur des donn?es state.x77
 #
 library(plotly)
-happyness2020 <- read.csv("./Fish.csv")
+happyness2020 <- read.csv("./winequality-white.csv", sep = ';')
 str(happyness2020)
 
 num_cols <- unlist(lapply(happyness2020, is.numeric))
 happyness2020 <- happyness2020[ , num_cols]  
 str(happyness2020)
-happyness.lm=lm(formula=Weight~.,data=happyness2020)
+happyness.lm=lm(formula=quality~.,data=happyness2020)
 
 summary(happyness.lm)
 life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])
@@ -18,7 +18,7 @@ extractAIC(happyness.lm)
 # On soustrait ? pr?sent les variables dont le coefficient n'est pas 
 # significativement diff?rent de z?ro.
 #
-happyness.lm<- update(happyness.lm,.~.-Length2)
+happyness.lm<- update(happyness.lm,.~.-residual.sugar)
 summary(happyness.lm)
 extractAIC(happyness.lm)
 #
@@ -34,12 +34,12 @@ extractAIC(happyness.lm)
 life.lm<-lm(formula=Weight~Length1+Length3+Height, data=happyness2020)
 summary(life.lm)
 Res=residuals(life.lm)
-hist(Res,freq=FALSE,nclass=10, col="yellow",main="histogramme des r?sidus")
+hist(Res, freq=FALSE, nclass=10, col="yellow",main="histogramme des r?sidus")
 # 
 # On ajute la courbe en cloche ? l'histogramme pour voir si les r?sidus
 # peuvent suivre une loi normle
 #
-x=seq(-3,3,by=0.1)
+x=seq(-3,3,by=1)
 y=dnorm(x,0,1)
 lines(x,y,type="l",col="red",lwd=2.5)
 #

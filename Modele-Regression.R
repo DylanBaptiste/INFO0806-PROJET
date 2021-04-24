@@ -10,8 +10,8 @@ str(happyness2020)
 happyness.lm=lm(formula=quality~.,data=happyness2020)
 
 summary(happyness.lm)
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])
-life.dt$names <- names(happyness2020)
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt$names <- rownames(life.dt)
 plot_ly(life.dt, x=~names, y=~abs(t.value), type="bar")
 extractAIC(happyness.lm)
 #

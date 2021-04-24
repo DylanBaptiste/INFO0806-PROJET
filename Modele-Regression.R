@@ -72,17 +72,15 @@ lines(x, y, type="l",col="red",lwd=2.5)
 nb <- data.frame(table(happyness2020[, "quality"]))
 plot_ly(data=nb, x=~Var1, y=~Freq, type="bar")
 
-happyness2020[2, life.dt$names]
+
 expectedResult <- happyness2020[2, "quality"]
-predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+predict(happyness.lm,data.frame(happyness2020[2, life.dt$names]),interval="prediction",level=0.99)
 
-happyness2020[252, life.dt$names]
 expectedResult <- happyness2020[252, "quality"]
-predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+predict(happyness.lm,data.frame(happyness2020[252, life.dt$names]),interval="prediction",level=0.99)
 
-happyness2020[775, life.dt$names]
 expectedResult <- happyness2020[775, "quality"]
-predict(happyness.lm,data.frame(happyness2020[1, life.dt$names]),interval="prediction",level=0.99)
+predict(happyness.lm,data.frame(happyness2020[775, life.dt$names]),interval="prediction",level=0.99)
 
 # données biaisé car nb de donné != pour chaque type de qualité
 

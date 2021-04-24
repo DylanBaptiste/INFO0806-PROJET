@@ -20,15 +20,37 @@ extractAIC(happyness.lm)
 # significativement diff?rent de z?ro.
 #
 happyness.lm <- update(happyness.lm,.~.-citric.acid)
-summary(happyness.lm)
 extractAIC(happyness.lm)
+summary(happyness.lm)
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt$names <- rownames(life.dt)
+life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$t.value), decreasing = FALSE)])
+plot_ly(life.dt, x=~names, y=~abs(t.value), type="bar")
 #
 # On soustrait la variable 'Population' et on regarde si le mod?le est meilleur
 #
-happyness.lm<- update(happyness.lm,.~.-Width)
+happyness.lm <- update(happyness.lm,.~.-chlorides)
+extractAIC(happyness.lm)
 summary(happyness.lm)
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt$names <- rownames(life.dt)
+life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$t.value), decreasing = FALSE)])
+plot_ly(life.dt, x=~names, y=~abs(t.value), type="bar")
+
+happyness.lm <- update(happyness.lm,.~.-total.sulfur.dioxide)
+extractAIC(happyness.lm)
+summary(happyness.lm)
+life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt$names <- rownames(life.dt)
+life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$t.value), decreasing = FALSE)])
+plot_ly(life.dt, x=~names, y=~abs(t.value), type="bar")
+
+happyness.lm <- update(happyness.lm,.~.-fixed.acidity)
 extractAIC(happyness.lm)
 
+happyness.lm <- update(happyness.lm,.~.+fixed.acidity)
+extractAIC(happyness.lm)
+summary(happyness.lm)
 #
 # On reprend le deuxi?me mod?le
 #

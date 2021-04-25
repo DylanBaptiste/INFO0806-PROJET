@@ -8,59 +8,60 @@ library(psych)
 library(plotly)
 
 #Chargement du dataset
-happyness2020 <- read.csv("./winequality-white.csv", sep = ';')
+vins <- read.csv("./winequality-white.csv", sep = ';')
 #Recuperation des colonnes numeriques
-happyness2020 <- happyness2020[ , unlist(lapply(happyness2020, is.numeric))]  
+vins <- vins[ , unlist(lapply(vins, is.numeric))]  
 
 
 ### Check for non-linearity (visually) and transform vars
-pairs.panels(happyness2020, col="red")
+# pairs.panels(vins, col="red")
 
 # Optionel
-happyness2020$volatile.acidity <- log10(happyness2020$volatile.acidity)
-happyness2020$residual.sugar <- log10(happyness2020$residual.sugar)
-happyness2020$chlorides <- log10(happyness2020$chlorides)
-happyness2020$free.sulfur.dioxide <- log10(happyness2020$free.sulfur.dioxide)
-happyness2020$density <- log10(happyness2020$density)
+vins$volatile.acidity <- log10(vins$volatile.acidity)
+vins$residual.sugar <- log10(vins$residual.sugar)
+vins$chlorides <- log10(vins$chlorides)
+vins$free.sulfur.dioxide <- log10(vins$free.sulfur.dioxide)
+vins$density <- log10(vins$density)
 
 # Que faire ?
 # https://blogs.sas.com/content/iml/2011/04/27/log-transformations-how-to-handle-negative-data-values.html
 # https://blogs.sas.com/content/iml/2018/08/27/on-the-assumptions-and-misconceptions-of-linear-regression.html
-#happyness2020$citric.acid <- log10(happyness2020$citric.acid + min(happyness2020$citric.acid) + 0.000000001)
+#vins$citric.acid <- log10(vins$citric.acid + min(vins$citric.acid) + 0.000000001)
 
-pairs.panels(happyness2020, col="red")
+#pairs.panels(vins, col="red")
 1+1
 set.seed(666)
-datasize <- length(happyness2020$quality)
+datasize <- length(vins$quality)
 train.size <- 0.99 # 1000 / datasize # prise aleatoire de 1000 individus
-train.index <- sample.int(length(happyness2020$quality), round(length(happyness2020$quality) * train.size))
-happyness2020.train <- happyness2020[train.index,]
-happyness2020.test  <- happyness2020[-train.index,]
-nrow(happyness2020.test)
-nrow(happyness2020.train)
-str(happyness2020)
+train.index <- sample.int(length(vins$quality), round(length(vins$quality) * train.size))
+vins.train <- vins[train.index,]
+vins.test  <- vins[-train.index,]
+nrow(vins.test)
+nrow(vins.train)
+str(vins)
 
 
 
 
-happyness.lm <- lm(formula=quality~.,data=happyness2020.train)
+vins.lm <- lm(formula=quality~.,data=vins.train)
 
-summary(happyness.lm)
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+summary(vins.lm)
+life.dt <- data.frame(summary(vins.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
 life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$Pr...t..), decreasing = FALSE)])
 plot_ly(life.dt, x=~names, y=~Pr...t.., type="bar")
-extractAIC(happyness.lm)
+extractAIC(vins.lm)
 #
 # On soustrait ? pr?sent les variables dont le coefficient n'est pas 
 # significativement diff?rent de z?ro.
 #
-happyness.lm <- update(happyness.lm,.~.-citric.acid-chlorides-total.sulfur.dioxide)
-happyness.lm <- update(happyness.lm,.~.-citric.acid-total.sulfur.dioxide)
+vins.lm <- update(vins.lm,.~.-citric.acid-chlorides-total.sulfur.dioxide)
+vins.lm <- update(vins.lm,.~.-citric.acid-fixed.acidity)
+vins.lm <- update(vins.lm,.~.+chlorides)
 
-extractAIC(happyness.lm)
-summary(happyness.lm)
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+extractAIC(vins.lm)
+summary(vins.lm)
+life.dt <- data.frame(summary(vins.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
 life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$Pr...t..), decreasing = FALSE)])
 
@@ -68,43 +69,50 @@ plot_ly(life.dt, x=~names, y=~Pr...t.., type="bar")
 #
 # On soustrait la variable 'Population' et on regarde si le mod?le est meilleur
 #
-happyness.lm <- update(happyness.lm,.~.-fixed.acidity)
-extractAIC(happyness.lm)
-summary(happyness.lm)
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+vins.lm <- update(vins.lm,.~.-fixed.acidity)
+extractAIC(vins.lm)
+summary(vins.lm)
+life.dt <- data.frame(summary(vins.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
 life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$Pr...t..), decreasing = FALSE)])
 plot_ly(life.dt, x=~names, y=~Pr...t.., type="bar")
 
-happyness.lm <- update(happyness.lm,.~.+fixed.acidity)
+vins.lm <- update(vins.lm,.~.+fixed.acidity)
 
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+life.dt <- data.frame(summary(vins.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
 paste("Variables gardées :")
 life.dt$names
 
-plot(happyness.lm)
+plot(vins.lm)
 
-happyness2020.train[which(rownames(happyness2020.train) %in% c("2782", "4746")),]
-happyness2020.train.minusextrem <- happyness2020.train[!rownames(happyness2020.train) %in% c("2782", "4746"),]
-nrow(happyness2020.train)
-nrow(happyness2020.train.minusextrem)
+vins.train[which(rownames(vins.train) %in% c("2782", "4746")),]
+vins.train.minusextrem <- vins.train[!rownames(vins.train) %in% c("2782", "4746"),]
+nrow(vins.train)
+nrow(vins.train.minusextrem)
 
 
-happyness.lm <- lm(formula=quality~.,data=happyness2020.train.minusextrem)
-happyness.lm <- update(happyness.lm,.~.-citric.acid-chlorides-total.sulfur.dioxide)
+vins.lm <- lm(formula=quality~.,data=vins.train.minusextrem)
 
-extractAIC(happyness.lm)
-summary(happyness.lm)
-life.dt <- data.frame(summary(happyness.lm)[["coefficients"]])[-1, ]
+#◙pas log 10
+vins.lm <- update(vins.lm,.~.-citric.acid-chlorides-total.sulfur.dioxide)
+
+# log10
+vins.lm <- update(vins.lm,.~.-citric.acid-fixed.acidity)
+
+
+extractAIC(vins.lm)
+summary(vins.lm)
+life.dt <- data.frame(summary(vins.lm)[["coefficients"]])[-1, ]
 life.dt$names <- rownames(life.dt)
 life.dt$names <- factor(life.dt$names, levels = unique(life.dt$names)[order(abs(life.dt$Pr...t..), decreasing = FALSE)])
 plot_ly(life.dt, x=~names, y=~Pr...t.., type="bar")
 
-plot(happyness.lm)
+plot(vins.lm)
 
 
-Res=residuals(happyness.lm)
+
+Res=residuals(vins.lm)
 hist(Res, freq=FALSE, nclass=10, col="yellow",main="histogramme des r?sidus")
 # 
 # On ajute la courbe en cloche ? l'histogramme pour voir si les r?sidus
@@ -116,18 +124,22 @@ lines(x, y, type="l",col="red",lwd=2.5)
 #
 # Pr?diction
 #
-nb <- data.frame(table(happyness2020.train[, "quality"]))
+nb <- data.frame(table(vins.train[, "quality"]))
 plot_ly(data=nb, x=~Var1, y=~Freq, type="bar")
 
+summary(vins.lm)
 
-expectedResult <- happyness2020.train[2, "quality"]
-predict(happyness.lm,data.frame(happyness2020.train[2, life.dt$names]),interval="prediction",level=0.99)
+expectedResult <- vins.train[2, "quality"]
+individu <- vins.train[2, as.character(life.dt$names)]
+predict(vins.lm, individu, interval="prediction", level=0.99)
 
-expectedResult <- happyness2020.train[252, "quality"]
-predict(happyness.lm,data.frame(happyness2020.train[252, life.dt$names]),interval="prediction",level=0.99)
+expectedResult <- vins.train[252, "quality"]
+individu <- vins.train[252, as.character(life.dt$names)]
+predict(vins.lm, individu, interval="prediction", level=0.99)
 
-expectedResult <- happyness2020.train[rownames(happyness2020.train) == "1418", "quality"]
-predict(happyness.lm,data.frame(happyness2020.train[rownames(happyness2020.train) == "1418", life.dt$names]),interval="prediction",level=0.99)
+expectedResult <- vins.train[rownames(vins.train) == "1418", "quality"]
+individu <- vins.train[2, as.character(life.dt$names)]
+predict(vins.lm, individu, interval="prediction", level=0.99)
 
 # données biaisé car nb de donné != pour chaque type de qualité
 

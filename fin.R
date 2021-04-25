@@ -63,7 +63,7 @@ lines(x, dnorm(x,0,1), type="l", col="red", lwd=2.5)
 
 expectedResult <- vins[rownames(vins) == "1418", "quality"]
 expectedResult
-individu <- vins[2, as.character(life.dt$names)]
+individu <- vins[rownames(vins) == "1418", as.character(life.dt$names)]
 individu
 predict(vins.lm, individu, interval="prediction", level=0.99)
 
@@ -167,7 +167,7 @@ lines(x, dnorm(x,0,1), type="l", col="red", lwd=2.5)
 
 expectedResult <- vins[rownames(vins) == "1418", "quality"]
 expectedResult
-individu <- vins[2, as.character(life.dt$names)]
+individu <- vins[rownames(vins) == "1418", as.character(life.dt$names)]
 individu
 predict(vins.lm, individu, interval="prediction", level=0.99)
 
